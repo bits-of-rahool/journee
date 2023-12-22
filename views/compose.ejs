@@ -1,17 +1,28 @@
-<%-include("partials/header")%>
+<%-include( "partials/header" )%>
 
-<h1 class="center">Compose</h1>
+  <div class="container compose ">
+    <div class="content-wrapper">
 
-<form action="/compose" method="post" >
-  <div class="mb-3">
-    <label for="exampleFormControlInput1" class="form-label">Title</label>
-    <input type="text" class="form-control" name="title" id="exampleFormControlInput1" placeholder="Enter Title">
+      <h1 class="center border rounded p-2 pb-3  " style="width: fit-content;">Compose</h1>
+
+      <form action="/compose" method="post">
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label">Title</label>
+          <input type="text" class="form-control" name="title" id="exampleFormControlInput1" placeholder="Enter Title">
+        </div>
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label">Post</label>
+          <textarea class="form-control" name="post" id="exampleFormControlTextarea1" placeholder="Start Writing..."
+            rows="7"></textarea>
+        </div>
+        <div class="button-container">
+          <button type="submit" class="btn btn-secondary outline-dark">Save</button>
+        </div>
+      </form>
+
+
+    </div>
   </div>
-  <div class="mb-3">
-    <label for="exampleFormControlTextarea1"  class="form-label">Post</label>
-    <textarea class="form-control" name="post" id="exampleFormControlTextarea1" placeholder="Start Writing..." rows="3"></textarea>
-  </div>
-  <button type="submit" class="btn btn-dark">Dark</button>
-</form>
 
-<%-include("partials/footer")%>
+
+  <%-include( "partials/footer" )%>

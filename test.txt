@@ -1,0 +1,1 @@
+db.products.insertOne({_id:2,name:"monitor",price:12000,color:"black",reviews:[{uid:1,name:"champa",rating:4,review:"i don't like this product!!!"},{uid:2,name:"chameli",rating:5,review:"i like this product!!!"}]})
