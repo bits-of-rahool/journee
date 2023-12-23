@@ -13,26 +13,28 @@ const app = express();
 app.set("view engine","ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-
-
 mongoose.connect(process.env.MONGO_URI)
+
 
 const schema={
   title: String,
   post: String
 }
 const Blogs = mongoose.model("Blog",schema);
-
-
-
+let firstRun=true;
 let allPost=[];
 
-const getPosts= async ()=>{
-    const res = await Blogs.find({});
-    allPost=[...res]
-    // console.log(res)
-   
-}
+const getPosts = async function()  {
+  try {
+      const res = await Blogs.find({});
+       allPost = [...res];
+      // console.log(allPost)
+  } catch (error) {
+      console.error("Error fetching posts:", error);
+  }
+};
+
+
 
 
 
@@ -41,18 +43,33 @@ let aboutContent=data.aboutContent;
 let contactContent=data.contactContent;
  
 
-
 app.get("/", (req, res) => {
-  
+ 
   getPosts();
-  setTimeout(() => {
-    res.render("home", {
-      homeContent: homeStartingContent,
-      allPost:allPost
-    });
-  }, 100);
+  if(firstRun){
+    setTimeout(() => {
+      res.render("home", {
+        homeContent: homeStartingContent,
+        allPost:allPost
+      });
+    }, 1000);
+    firstRun=false;
+  }
+  else{
+    setTimeout(() => {
+      res.render("home", {
+        homeContent: homeStartingContent,
+        allPost:allPost
+      });
+    }, 100);
+  }
+
+
+  
   
 });
+
+
 
 
 
@@ -105,4 +122,3 @@ app.listen(3000,"localhost", function () {
   console.log("Server started at http://localhost:3000");
 });
 
-//192.168.1.82
