@@ -1,5 +1,4 @@
 //jshint esversion:6
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
@@ -16,63 +15,40 @@ app.use(express.static("public"));
 mongoose.connect(process.env.MONGO_URI)
 
 
-const schema={
-  title: String,
-  post: String
-}
+const schema={title: String,post: String};
 const Blogs = mongoose.model("Blog",schema);
-let firstRun=true;
-let allPost=[];
 
-const getPosts = async function()  {
+
+var homeStartingContent=data.homeStartingContent;
+let aboutContent=data.aboutContent;
+let contactContent=data.contactContent;
+var allPost=[];
+
+//getting posts from the database.
+const getPosts = async function(callback)  {
   try {
       const res = await Blogs.find({});
        allPost = [...res];
-      // console.log(allPost)
   } catch (error) {
       console.error("Error fetching posts:", error);
   }
+  callback();
 };
 
+const render=function (){
+  this.res.render("home", {
+    homeContent: homeStartingContent,
+    allPost:allPost
+  });
+}
 
 
-
-
-let homeStartingContent=data.homeStartingContent;
-let aboutContent=data.aboutContent;
-let contactContent=data.contactContent;
- 
-
+//get requests
 app.get("/", (req, res) => {
- 
-  getPosts();
-  if(firstRun){
-    setTimeout(() => {
-      res.render("home", {
-        homeContent: homeStartingContent,
-        allPost:allPost
-      });
-    }, 1000);
-    firstRun=false;
-  }
-  else{
-    setTimeout(() => {
-      res.render("home", {
-        homeContent: homeStartingContent,
-        allPost:allPost
-      });
-    }, 100);
-  }
-
-
   
-  
+  getPosts.bind(render);  
+    //render function as callback
 });
-
-
-
-
-
 
 app.get("/about", (req, res) => {
   res.render("about", { aboutContent: aboutContent });
@@ -88,33 +64,24 @@ app.get("/compose", (req, res) => {
 
 app.get("/:para",(req,res)=>{
   const prm=lodash.lowerCase(req.params.para);
-  // console.log(prm);
-    
   allPost.forEach((elem)=>{
     const title=lodash.lowerCase(elem.title);
     if(title===prm){
       res.render("post",{title:elem.title,post:elem.post});
-    }
-    
-  })
+}})})
 
-})
 
 // post requests
-
 app.post("/compose",(req,res)=>{
   const newPost={
     title:req.body.title,
     post:req.body.post
   };
-
   const newBlog= new Blogs(newPost);
-  newBlog.save();
+  newBlog.save();   //saving new document to DB
   allPost.push(newPost);
-
   res.redirect("/");
 })
-
 
 
 //listening
