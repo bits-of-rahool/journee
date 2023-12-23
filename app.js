@@ -35,18 +35,18 @@ const getPosts = async function(callback)  {
   callback();
 };
 
-const render=function (){
-  this.res.render("home", {
-    homeContent: homeStartingContent,
-    allPost:allPost
-  });
-}
+
 
 
 //get requests
 app.get("/", (req, res) => {
-  
-  getPosts.bind(render);  
+  const render=function (){
+    res.render("home", {
+      homeContent: homeStartingContent,
+      allPost:allPost
+    });
+  }
+  getPosts(render)
     //render function as callback
 });
 
