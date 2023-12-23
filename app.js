@@ -85,7 +85,7 @@ app.post("/compose",(req,res)=>{
 
 
 //listening
-app.listen(3000,"localhost", function () {
+app.listen(3000, function () {
   console.log("Server started at http://localhost:3000");
 });
 
