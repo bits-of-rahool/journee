@@ -13,13 +13,32 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 mongoose.connect(process.env.MONGO_URI);
 
-const schema = { title: String, post: String };
+const schema = {
+  title: {
+    type: String,
+    required: true,
+  },
+  post: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: String,
+    required: true,
+  },
+};
 const Blogs = mongoose.model("Blog", schema);
 
 var homeStartingContent = data.homeStartingContent;
 let aboutContent = data.aboutContent;
 let contactContent = data.contactContent;
 var allPost = [];
+const options = {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
 
 //getting posts from the database.
 const getPosts = async function (callback) {
@@ -56,7 +75,7 @@ app.get("/compose", (req, res) => {
   res.render("compose");
 });
 
-app.get("/:para", (req, res) => {
+app.get("/:para", async (req, res) => {
   const prm = lodash.lowerCase(req.params.para);
   allPost.forEach((elem) => {
     const title = lodash.lowerCase(elem.title);
@@ -65,17 +84,31 @@ app.get("/:para", (req, res) => {
     }
   });
 });
+app.get("/:para/delete", async (req, res) => {
+  const found = await Blogs.findOne({ title: req.params.para });
+  await Blogs.findById(found._id).deleteOne();
+  res.redirect("/");
+});
 
 // post requests
-app.post("/compose", (req, res) => {
+app.post("/compose", async (req, res) => {
+  const today = new Date().toLocaleDateString("en-IN", options);
+  console.log(today);
+
   const newPost = {
     title: req.body.title,
     post: req.body.post,
+    date: today,
   };
+
   const newBlog = new Blogs(newPost);
-  newBlog.save(); //saving new document to DB
-  allPost.push(newPost);
-  res.redirect("/");
+  try {
+    await newBlog.save();
+    allPost.push(newPost);
+    res.redirect("/"); //saving new document to DB
+  } catch (error) {
+    res.send(error.message);
+  }
 });
 
 //listening
