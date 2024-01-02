@@ -1,5 +1,6 @@
 body {
   display: flex;
+  
   flex-direction: column;
   font-family: "Poppins", sans-serif;
   font-family: "Righteous", sans-serif;
@@ -12,12 +13,12 @@ body {
   width: 100%;
 }
 .footer {
+  position: absolute;
+  bottom: 0;
   width: 100%;
   text-align: center;
-  height: 30px;
-  margin-top: auto;
-  position: absolute;
-  bottom: 0px;
+  height: 60px;
+  /* background-color: #bc531a; */
 }
 .footer p {
   margin-top: 25px;

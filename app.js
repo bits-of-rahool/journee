@@ -6,6 +6,13 @@ const data = require(__dirname + "/data.js");
 var lodash = require("lodash");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
+const LocalStrategy  = require("passport-local");
+const passport = require("passport");
+const createUser = require("./model/mongoose");
+const Users = require("./model/Users");
+const session = require("express-session");
+var ObjectId = require('mongodb').ObjectId; 
+
 
 const app = express();
 app.set("view engine", "ejs");
@@ -13,7 +20,29 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 mongoose.connect(process.env.MONGO_URI);
 
-const schema = {
+app.use(session({
+  secret:"Our little secret.",
+  resave: false,
+  saveUninitialized: false
+}))
+app.use(passport.session());
+passport.serializeUser(function(user, cb) {
+  process.nextTick(function() {
+    return cb(null, {
+      id: user.id,
+      username: user.username,
+      picture: user.picture
+    });
+  });
+});
+
+passport.deserializeUser(function(user, cb) {
+  process.nextTick(function() {
+    return cb(null, user);
+  });
+});
+
+const blogSchema = {
   title: {
     type: String,
     required: true,
@@ -26,8 +55,19 @@ const schema = {
     type: String,
     required: true,
   },
+  uid: String,
 };
-const Blogs = mongoose.model("Blog", schema);
+const Blogs = mongoose.model("Blog", blogSchema);
+
+passport.use(new LocalStrategy(
+ async function(username, password, done) {
+   const user = await Users.findOne({ username: username });
+    if (!user) { return done(null, false); }
+    if (user.password !== password) { return done(null, false); }
+    return done(null, user);
+
+  }
+));
 
 var homeStartingContent = data.homeStartingContent;
 let aboutContent = data.aboutContent;
@@ -41,26 +81,73 @@ const options = {
 };
 
 //getting posts from the database.
-const getPosts = async function (callback) {
-  try {
-    const res = await Blogs.find({});
-    allPost = [...res];
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-  }
-  callback();
-};
+
 
 //get requests
+
+
+
+
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+app.get("/logout", (req, res) => {
+  req.logout(function(err) {
+    
+    if (err) { return; }
+    res.redirect('/login');
+  });
+})
+
+
+app.post("/login", passport.authenticate("local", {failureRedirect:"/register"}),(req,res) => {
+
+  res.redirect("/");
+})
+
+
+
+app.post("/register",  (req, res) => {
+
+  const callback = function () {
+    res.redirect("/");
+  };
+  createUser(req.body.username,req.body.email,req.body.password,callback);
+}
+);
+
+
 app.get("/", (req, res) => {
+ 
+  const getPosts = async function (callback) {
+
+ 
+    try {
+      const res = await Blogs.find({uid: req.user.id});
+      allPost = [...res];
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+    callback();
+  };
+  
   const render = function () {
     res.render("home", {
       homeContent: homeStartingContent,
       allPost: allPost,
     });
   };
-  getPosts(render);
-  //render function as callback
+  if(req.isAuthenticated()){
+    getPosts(render);
+  }
+  else{
+    res.redirect("/login");
+  }
 });
 
 app.get("/about", (req, res) => {
@@ -93,12 +180,13 @@ app.get("/:para/delete", async (req, res) => {
 // post requests
 app.post("/compose", async (req, res) => {
   const today = new Date().toLocaleDateString("en-IN", options);
-  console.log(today);
+  
 
   const newPost = {
     title: req.body.title,
     post: req.body.post,
     date: today,
+    uid: req.user.id
   };
 
   const newBlog = new Blogs(newPost);
