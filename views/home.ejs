@@ -36,12 +36,12 @@
                                             <div class="">
                                                 <a href="/<%= elem.title %>"
                                                     class="btn btn-sm btn-outline-secondary ">Read More</a>
-                                                <button type="button "
-                                                    class="btn btn-sm btn-outline-secondary">Edit</button>
+                                                <a href="/<%= elem.title %>/edit"
+                                                    class="btn btn-sm btn-outline-secondary">Edit</a>
                                                     <a href="/<%= elem.title %>/delete"
                                                         class="btn btn-sm btn-outline-danger ">Delete</a>
                                             </div>
-                                            <small class="text-body-secondary "><%=elem.date%></small>
+                                            <small class="text-body-secondary "><%=elem.updatedAt%></small>
                                         </div>
                                 </div>
                             </div>
