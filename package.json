@@ -2,22 +2,24 @@
   "name": "ejs-challenge",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "./src/app.js",
   "engines": {
     "node": "18.x"
   },
   "scripts": {
-    "start": "nodemon"
+    "start": "nodemon ./src/app.js"
   },
   "type": "module",
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "dotenv": "^16.3.1",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
     "express-session": "^1.17.3",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongoose": "^8.0.3",
     "nodemon": "^3.0.2",

@@ -1,22 +1,20 @@
 import dotenv from "dotenv";
 import express from "express";
 import data from "./data.js";
-import LocalStrategy from "passport-local";
-import passport from "passport";
 import createUser from "./controllers/createUser.js";
-import User from "./models/User.js";
-import session from "express-session";
+import {User} from "./models/User.js";
 import connectDB from "./db/index.js";
 import Blog from "./models/Blog.js";
 import getPosts from "./controllers/getPosts.js";
 import createBlog from "./controllers/createBlog.js";
 import { ObjectId } from "mongodb";
 import ejs from "ejs";
-
+import wrapper from "./utils/wrapper.js";
 dotenv.config();
 
 const app = express();
 app.set("view engine", "ejs");
+app.set("views", "./src/views"); 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
@@ -29,42 +27,8 @@ connectDB()
   })
   .catch((err) => console.log(err));
 
-app.use(
-  session({
-    secret: "Our little secret.",
-    resave: false,
-    saveUninitialized: false,
-  }),
-);
-app.use(passport.session());
-passport.serializeUser(function (user, cb) {
-  process.nextTick(function () {
-    return cb(null, {
-      id: user.id,
-      username: user.username,
-      picture: user.picture,
-    });
-  });
-});
 
-passport.deserializeUser(function (user, cb) {
-  process.nextTick(function () {
-    return cb(null, user);
-  });
-});
 
-passport.use(
-  new LocalStrategy(async function (username, password, done) {
-    const user = await User.findOne({ username: username });
-    if (!user) {
-      return done(null, false);
-    }
-    if (user.password !== password) {
-      return done(null, false);
-    }
-    return done(null, user);
-  }),
-);
 
 let aboutContent = data.aboutContent;
 let contactContent = data.contactContent;
@@ -75,48 +39,27 @@ let allPosts = [];
 //get requests
 
 app.get("/login", (req, res) => {
-  if (req.isAuthenticated()) {
-    try {
-      res.redirect("/");
-    } catch (error) {
-      console.log(error);
-    }
-  } else {
+  
     res.render("login");
-  }
+ 
 });
 
 app.get("/register", (req, res) => {
-  if (req.isAuthenticated()) {
-    try {
-      res.redirect("/");
-    } catch (error) {
-      console.log(error);
-    }
-  } else {
+ 
     res.render("register");
-  }
+
 });
 
 app.get("/logout", (req, res) => {
-  req.logout(function (err) {
-    if (err) {
-      return;
-    }
     res.redirect("/login");
-  });
 });
 
 app.get("/", async (req, res) => {
-  if (req.isAuthenticated()) {
-    await getPosts(req.user.id).then((allPosts) => {
+  await getPosts().then((result) => {
+    allPosts = [...result];
       res.render("home", {
-        allPost: allPosts,
-      });
-    });
-  } else {
-    res.redirect("/login");
-  }
+        allPost: allPosts});
+      })
 });
 
 app.get("/about", (req, res) => {
@@ -144,7 +87,7 @@ app.get("/:para/delete", async (req, res) => {
       res.redirect("/");
     });
 });
-
+  
 // post requests
 app.post("/compose", async (req, res) => {
   await createBlog(req, res).then((newPost) => {
@@ -158,18 +101,32 @@ app.post("/register", (req, res) => {
     if (err) {
       console.log(err);
     }
-    passport.authenticate("local")(req, res, function () {
+    else{
       res.redirect("/");
-    });
+    }
   };
-  createUser(req.body.username, req.body.email, req.body.password, callback);
+  wrapper(createUser)(req.body.username, req.body.email, req.body.password, callback);
+  // createUser(req.body.username, req.body.email, req.body.password, callback);
 });
 
-app.post(
-  "/login",
-  passport.authenticate("local", { failureRedirect: "/register" }),
-  (req, res) => {
-    res.redirect("/");
-  },
-);
-//listening
+app.post("/login",async (req, res) =>{
+  try {
+    const found = await User.findOne({ username: req.body.username });
+
+    if (!found) {
+      throw new Error('User not found');
+    }
+    const isPasswordMatch = await found.comparePassword(req.body.password);
+    const token = await found.generateAccessToken();
+    console.log(token)
+
+    if (isPasswordMatch) {
+      res.redirect("/");
+    } else {
+      res.redirect("/login");
+    }
+  } catch (error) {
+    console.error(error);
+    res.redirect("/login");
+  }
+});
