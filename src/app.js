@@ -21,16 +21,13 @@ app.use(express.static("public"));
 connectDB()
   .then(() => {
     console.log("MongoDB connected");
-    app.listen(process.env.PORT || 3000, () => {
+    app.listen(process.env.PORT || 5000, () => {
       console.log(`server is listening on port ${process.env.PORT || 3000}`);
     });
   })
-  .catch((err) => console.log(err));
-
-
-
-
-let aboutContent = data.aboutContent;
+.catch((err) => console.log(err));
+    
+let aboutContent = data.aboutContent
 let contactContent = data.contactContent;
 let allPosts = [];
 
@@ -39,7 +36,7 @@ let allPosts = [];
 //get requests
 
 app.get("/login", (req, res) => {
-  
+   
     res.render("login");
  
 });
