@@ -34,12 +34,12 @@
                                         <p class="card-text mt-3 content"><%= elem.post %></p>
                                         <div class="d-flex justify-content-between align-items-center mt-3 ">
                                             <div class="">
-                                                <a href="/<%= elem.title %>"
+                                                <a href="/journal/<%= elem.title%>"
                                                     class="btn btn-sm btn-outline-secondary ">Read More</a>
                                                 <a href="/<%= elem.title %>/edit"
                                                     class="btn btn-sm btn-outline-secondary">Edit</a>
-                                                    <a href="/<%= elem.title %>/delete"
-                                                        class="btn btn-sm btn-outline-danger ">Delete</a>
+                                                    <a href="/journal/<%= elem.title %>/delete"
+                                                        class="btn btn-sm btn-outline-danger " >Delete</a>
                                             </div>
                                             <small class="text-body-secondary "><%=elem.updatedAt%></small>
                                         </div>
