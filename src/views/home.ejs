@@ -13,7 +13,7 @@
                         revolution – reclaim your narrative, one vibrant entry at a time! ✨
                     </p>
                     <p>
-                        <a href="/compose" class="btn btn-secondary outline-dark my-2">Start Writing✒️</a>
+                        <a href="/journal/compose" class="btn btn-secondary outline-dark my-2">Start Writing✒️</a>
                     </p>
                 </div>
             </div>
@@ -41,7 +41,7 @@
                                                     <a href="/journal/<%= elem.title %>/delete"
                                                         class="btn btn-sm btn-outline-danger " >Delete</a>
                                             </div>
-                                            <small class="text-body-secondary "><%=elem.updatedAt%></small>
+                                            <small class="text-body-secondary "><%=elem.updatedAt.toLocaleDateString("en-IN", {weekday: "long",year: "numeric",month: "long",day: "numeric",})%></small>
                                         </div>
                                 </div>
                             </div>

@@ -1,18 +1,14 @@
-import {User} from "../models/User.js";
+import { User } from "../models/User.js";
+import wrapper from "../utils/wrapper.js";
 
-const createUser = async (username, email, password, callback) => {
+const createUser = wrapper (async (req,res) => {
   const newUser = new User({
-    username: username,
-    password: password,
-    email: email,
+    username: req.body.username,
+    password: req.body.password,
+    email: req.body.email,
   });
-  try {
-    const res = await newUser.save();
-    callback();
-  } catch (err) {
-    console.log("in create user")
-    callback(err);
-  }
-};
-
+    return await newUser.save().then(() => {
+      res.redirect("/user/login");
+    });
+});
 export default createUser;

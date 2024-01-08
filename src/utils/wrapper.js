@@ -1,11 +1,25 @@
-function wrapper(orgFunc){
-    return function(...args)
-    {   
-        try {
-           orgFunc(...args);
-        } catch (error) {
-           return console.log("error in wrapper is : "+error)
-        }
+//  function wrapper(orgFunc) {
+
+//    return async (...args)=> {
+//       try {
+//         console.log("inside wrapper");
+//           await orgFunc(...args);
+//       } catch (error) {
+//         console.error(error);
+//         throw error;
+//       }
+//     }
+  
+// }
+
+
+const wrapper = (fn) => {
+  return async (req, res, next) => {
+    try {
+      await fn(req, res, next);
+    } catch (error) {
+      next(error);
     }
+  }
 }
 export default wrapper;
