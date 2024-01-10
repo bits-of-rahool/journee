@@ -66,3 +66,14 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+.list{
+  gap: 40px;
+  list-style: none;
+
+}
+
+
+.list a{
+  text-decoration: none;
+}
