@@ -16,6 +16,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  refreshToken:{
+    type: String,
+  }
 });
 
 userSchema.pre("save", async function (next) {
@@ -29,19 +32,19 @@ userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-// userSchema.methods.generateAccessToken = function () {
-//   return jwt.sign(
-//     { username: this.username, email: this.email },
-//     process.env.ACCESS_SECRET_KEY,
-//     { expiresIn: process.env.ACCESS_EXPIRY },
-//   );
-// };
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    { username: this.username, email: this.email },
+    process.env.ACCESS_SECRET_KEY,
+    { expiresIn: process.env.ACCESS_EXPIRY },
+  );
+};
 
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign({ username: this.username }, process.env.REFRESH_SECRET_KEY, {
     expiresIn: process.env.REFRESH_EXPIRY,
   });
-};
+};  
 
 const User = new mongoose.model("User", userSchema);
 

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import createUser from "../controllers/createUser.js";
-import verifyUser from "../controllers/verifyUser.js";
-
+import {createUser,loginUser} from "../controllers/createUser.js";
+import verifyToken from "../middlewares/auth.js";
+import { User } from "../models/User.js";
 const router = Router();
 
 //login route
@@ -10,7 +10,7 @@ router
   .get((req, res) => {
     res.render("login");
   })
-  .post(verifyUser);
+  .post(loginUser);
 
 
 //register route
@@ -22,12 +22,11 @@ router
   .post(createUser);
 
   //logout route
-  router.get("/logout", (req, res) => {
-    res.redirect("/login");    
-  })
-
-
-
+  router.post("/logout",verifyToken, async (req, res) => {
+    const user = await User.findOneAndUpdate({email:req.user.email},{refreshToken:null});
+    res.clearCookie("accessToken").clearCookie("refreshToken").redirect("/user/login");
+  }
+  );
 
 export default router;
  

@@ -12,6 +12,7 @@ let allPosts = [];
 router.route("/").get(async (req, res) => {  
     await getPosts().then((result) => {
         allPosts = [...result];
+        console.log(req.cookies);
         res.render("home", {
           allPost: allPosts,
         });
