@@ -3,6 +3,9 @@ import {createUser,loginUser} from "../controllers/createUser.js";
 import verifyToken from "../middlewares/auth.js";
 import { User } from "../models/User.js";
 const router = Router();
+import mongoose from "mongoose";
+const ObjectId = mongoose.Types.ObjectId
+
 
 //login route
 router
@@ -23,7 +26,8 @@ router
 
   //logout route
   router.post("/logout",verifyToken, async (req, res) => {
-    const user = await User.findOneAndUpdate({email:req.user.email},{refreshToken:null});
+    const id = new ObjectId(req.user.id);
+    const user = await User.findOneAndUpdate({_id:id},{refreshToken:null});
     res.clearCookie("accessToken").clearCookie("refreshToken").redirect("/user/login");
   }
   );

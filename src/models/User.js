@@ -34,7 +34,7 @@ userSchema.methods.comparePassword = async function (password) {
 
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
-    { username: this.username, email: this.email },
+    { username: this.username, email: this.email, id: this._id },
     process.env.ACCESS_SECRET_KEY,
     { expiresIn: process.env.ACCESS_EXPIRY },
   );

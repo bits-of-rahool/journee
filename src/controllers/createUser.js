@@ -48,7 +48,7 @@ const loginUser = wrapper(async (req, res, next) => {
   } 
 
   const {accessToken,updatedUser,refreshToken}= await generateRefreshAndAccessToken(user);
-
+  // console.log(accessToken);
   const options = {
   secure: true,
     httpOnly: true,
