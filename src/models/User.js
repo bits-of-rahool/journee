@@ -41,7 +41,8 @@ userSchema.methods.generateAccessToken = function () {
 };
 
 userSchema.methods.generateRefreshToken = function () {
-  return jwt.sign({ username: this.username }, process.env.REFRESH_SECRET_KEY, {
+  console.log("this._id: "+this._id)
+  return jwt.sign({ id: this._id }, process.env.REFRESH_SECRET_KEY, {
     expiresIn: process.env.REFRESH_EXPIRY,
   });
 };  

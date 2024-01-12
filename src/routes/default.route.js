@@ -5,14 +5,14 @@ import data from "../data.js";
 
 const router = Router();
 
-let aboutContent = data.aboutContent;
+let aboutContent = data.aboutContent; 
 let contactContent = data.contactContent;
 let allPosts = [];
 
 router.route("/").get(async (req, res) => {  
     await getPosts().then((result) => {
         allPosts = [...result];
-        console.log(req.cookies);
+        console.log(req.user)
         res.render("home", {
           allPost: allPosts,
         });

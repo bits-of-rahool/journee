@@ -23,7 +23,7 @@ router.route("/:param").get(async (req, res) => {
 router.route("/:param/delete").get(async (req, res) => {
   await Blog.findOne({ title: req.params.param })
     .deleteOne()
-    .then(() => {
+    .then(() => { 
       res.redirect("/");
     });
 });

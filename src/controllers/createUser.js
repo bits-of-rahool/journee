@@ -25,7 +25,6 @@ const createUser = wrapper (async (req,res) => {
     email: req.body.email,
   });
 
-
     return await newUser.save().then(() => {
       res.redirect("/user/login");
     }).catch((err) => {
@@ -34,10 +33,11 @@ const createUser = wrapper (async (req,res) => {
 });
 
 
-const loginUser = wrapper(async (req, res, next) => {
-  const {username, password,email} = req.body;
-  const user = await User.findOne({ $or:[{username},{email}] });
-  
+const loginUser = wrapper(async (req, res) => {
+  const {username, password} = req.body;
+ 
+  const user = await User.findOne({ username });
+
   if (!user) {
     throw new ApiError(404, "User not found");
   }
@@ -48,21 +48,17 @@ const loginUser = wrapper(async (req, res, next) => {
   } 
 
   const {accessToken,updatedUser,refreshToken}= await generateRefreshAndAccessToken(user);
-  // console.log(accessToken);
+
   const options = {
   secure: true,
     httpOnly: true,
   };
-
+  console.log("accessToken: "+accessToken);
   return res
   .status(200)
   .cookie("accessToken", accessToken, options)
   .cookie("refreshToken", refreshToken, options)
-  .json({
-    accessToken,
-    refreshToken,
-    updatedUser,
-  })
+  .redirect("/");
 })
 
 export  {createUser, loginUser};

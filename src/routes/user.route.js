@@ -22,9 +22,10 @@ router
   .get((req, res) => {
     res.render("register");
   })
-  .post(createUser);
+  .post(createUser); 
 
-  //logout route
+
+  //secured routes
   router.post("/logout",verifyToken, async (req, res) => {
     const id = new ObjectId(req.user.id);
     const user = await User.findOneAndUpdate({_id:id},{refreshToken:null});

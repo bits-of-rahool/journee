@@ -4,6 +4,7 @@ import userRouter from "./routes/user.route.js";
 import journalRouter from "./routes/journal.route.js";
 import cookieParser from "cookie-parser";
 import { upload } from "./middlewares/multer.js";
+import verifyToken from "./middlewares/auth.js";
 const app = express();
 
 app.set("view engine", "ejs");
@@ -14,7 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 //routes
 app.use("/user", upload.single('file'), userRouter);
-app.use("/journal", journalRouter);
-app.use("/", defaultRouter);
+app.use("/journal", verifyToken, journalRouter);
+app.use("/",verifyToken, defaultRouter);
 
 export { app };
