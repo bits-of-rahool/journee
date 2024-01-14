@@ -1,11 +1,9 @@
 import { Router } from "express";
-import {createUser,loginUser} from "../controllers/createUser.js";
-import verifyToken from "../middlewares/auth.js";
-import { User } from "../models/User.js";
-const router = Router();
-import mongoose from "mongoose";
-const ObjectId = mongoose.Types.ObjectId
+import {loginUser, logoutUser, registerUser} from "../controllers/user.controller.js";
+import {verifyToken} from "../middlewares/auth.js";
+import {regenerateAccessToken} from "../controllers/user.controller.js";
 
+const router = Router();
 
 //login route
 router
@@ -15,23 +13,19 @@ router
   })
   .post(loginUser);
 
-
 //register route
 router
   .route("/register")
   .get((req, res) => {
     res.render("register");
   })
-  .post(createUser); 
+  .post(registerUser); 
 
+ 
+//secured routes
+  router.post("/logout",verifyToken, logoutUser);
 
-  //secured routes
-  router.post("/logout",verifyToken, async (req, res) => {
-    const id = new ObjectId(req.user.id);
-    const user = await User.findOneAndUpdate({_id:id},{refreshToken:null});
-    res.clearCookie("accessToken").clearCookie("refreshToken").redirect("/user/login");
-  }
-  );
+  router.post("/regenerateAccessToken", regenerateAccessToken);
 
 export default router;
  

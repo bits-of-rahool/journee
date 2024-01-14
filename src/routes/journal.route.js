@@ -1,7 +1,6 @@
 import { Router } from "express";
-import Blog from "../models/Blog.js";
-import createJournal from "../controllers/createJournal.js";
-
+import Blog from "../models/blog.model.js";
+import {createJournal} from "../controllers/journal.controller.js";
 
 const router = Router();
 
@@ -14,10 +13,10 @@ router.route("/compose")
 //post routes
 router.route("/:param").get(async (req, res) => {
   await Blog.findOne({ title: req.params.param }).then((found) => {
+    console.log("found "+found);
     res.render("post", { title: found.title, post: found.post });
   });
 });
-
 
 //delete routes
 router.route("/:param/delete").get(async (req, res) => {
