@@ -3,13 +3,14 @@ import {getJournal} from "../controllers/journal.controller.js";
 
 const router = Router();
 
-let allPosts = [];
+
  
 router.route("/").get(async (req, res) => {  
-    await getJournal().then((result) => {
-        allPosts = [...result];
+    await getJournal(req,res).then((result) => {
+       const allPosts = [...result];
         res.render("home", {
           allPost: allPosts,
+          avatar: req.user.avatar,
         });
     });
 })

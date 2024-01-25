@@ -2,6 +2,7 @@ import { Router } from "express";
 import {loginUser, logoutUser, registerUser} from "../controllers/user.controller.js";
 import {verifyToken} from "../middlewares/auth.js";
 import {regenerateAccessToken} from "../controllers/user.controller.js";
+import {upload} from "../middlewares/multer.js";
 
 const router = Router();
 
@@ -13,19 +14,18 @@ router
   })
   .post(loginUser);
 
+
 //register route
 router
   .route("/register")
   .get((req, res) => {
     res.render("register");
   })
-  .post(registerUser); 
-
- 
-//secured routes
-  router.post("/logout",verifyToken, logoutUser);
+  .post(upload.single('avatar'),registerUser);
+  //secured routes
+router
+  .post("/logout",verifyToken, logoutUser);
 
   router.post("/regenerateAccessToken", regenerateAccessToken);
 
 export default router;
- 

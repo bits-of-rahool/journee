@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { Schema } from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   username: {
     type: String,
     required: true,
@@ -18,7 +19,11 @@ const userSchema = new mongoose.Schema({
   },
   refreshToken:{
     type: String,
+  },
+  avatar:{
+    type:String,
   }
+  
 });
 
 userSchema.pre("save", async function (next) {
@@ -34,18 +39,22 @@ userSchema.methods.comparePassword = async function (password) {
 
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
-    { username: this.username, email: this.email, id: this._id },
+    { username: this.username, email: this.email, id: this._id,avatar:this.avatar },
     process.env.ACCESS_SECRET_KEY,
     { expiresIn: process.env.ACCESS_EXPIRY },
   );
 };
 
 userSchema.methods.generateRefreshToken = function () {
-
   return jwt.sign({ id: this._id }, process.env.REFRESH_SECRET_KEY, {
     expiresIn: process.env.REFRESH_EXPIRY,
   });
 };  
+
+userSchema.methods.addBlog = async function (blog) {
+this.blogs.push(blog);
+return await this.save();
+};
 
 const User = new mongoose.model("User", userSchema);
 

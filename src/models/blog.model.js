@@ -10,7 +10,7 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    uid: String,
+    userId: {type: String},  
   },
   { timestamps: true },
 );

@@ -13,7 +13,7 @@ const verifyToken = (req, res, next) => {
       console.log(error);
       res.status(401).redirect("/user/login");
     }
-    // console.log("verified");
+
     next();
 }
 

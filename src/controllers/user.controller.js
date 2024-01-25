@@ -3,10 +3,12 @@ import wrapper from "../utils/wrapper.js";
 import ApiError from "../utils/ApiError.js";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
+import { uploadImage } from "../utils/cloudinary.js";
+
 const ObjectId = mongoose.Types.ObjectId
 
 const generateRefreshAndAccessToken = async (user) => {
-  // const user = await User.findById(id);
+
   try {
     const accessToken = await user.generateAccessToken();
     const refreshToken = await user.generateRefreshToken();
@@ -21,11 +23,23 @@ const generateRefreshAndAccessToken = async (user) => {
 }
 
 const registerUser = wrapper (async (req,res) => {
-  const newUser = new User({
-    username: req.body.username,
-    password: req.body.password,
-    email: req.body.email,
-  });
+  console.log(" file is ",req.file);
+    if(!req.file){
+      throw new ApiError(400,"Please provide an image in registerUser");
+    }
+
+    const image = await uploadImage(req.file.path).catch((err) => {
+      throw new ApiError(err.statusCode,"error while uploading: "+ err.message );
+    })
+    
+    console.log(image)
+
+    const newUser = new User({
+      username: req.body.username,
+      password: req.body.password,
+      email: req.body.email,
+      avatar:image,
+    });
 
     return await newUser.save().then(() => {
       res.redirect("/user/login");
